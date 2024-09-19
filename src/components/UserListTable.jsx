@@ -2,10 +2,13 @@ import UserListItem from "./UserListItem";
 import { useEffect, useState } from "react";
 import * as userApi from "../services/userApi";
 import CreateUserModal from "./CreateUserModal";
+import UserInfoModal from "./UserInfoModal";
 
 const UserListTable = () => {
   const [users, setUsers] = useState([]);
   const [showCreate, setShowCreate] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     userApi
@@ -39,12 +42,24 @@ const UserListTable = () => {
     setShowCreate(false);
   };
 
+  const userInfoClickHandler = async (userId) => {
+    setSelectedUser(userId);
+    setShowInfo(true);
+  };
+
   return (
     <div className="table-wrapper">
       {showCreate && (
         <CreateUserModal
           onClose={hideCreateUserModal}
           onCreate={userCreateHandler}
+        />
+      )}
+
+      {showInfo && (
+        <UserInfoModal
+          onClose={() => setShowInfo(false)}
+          userId={selectedUser}
         />
       )}
 
@@ -150,12 +165,14 @@ const UserListTable = () => {
             <UserListItem
               //  {...user} - short way using destructuring
               key={user._id}
+              userId={user._id}
               createdAt={user.createdAt}
               email={user.email}
               firstName={user.firstName}
               imageUrl={user.imageUrl}
               lastName={user.lastName}
               phoneNumber={user.phoneNumber}
+              onInfoClick={userInfoClickHandler}
             />
           ))}
         </tbody>
