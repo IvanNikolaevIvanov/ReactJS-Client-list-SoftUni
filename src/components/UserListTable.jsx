@@ -1,18 +1,28 @@
 import UserListItem from "./UserListItem";
 import { useEffect, useState } from "react";
 import * as userApi from "../services/userApi";
+import CreateUserModal from "./CreateUserModal";
 
 const UserListTable = () => {
   const [users, setUsers] = useState([]);
-
-  console.log(users);
+  const [showCreate, setShowCreate] = useState(false);
 
   useEffect(() => {
     userApi.getAll().then((result) => setUsers(result));
   }, []);
 
+  const createUserClickHandler = () => {
+    setShowCreate(true);
+  };
+
+  const hideCreateUserModal = () => {
+    setShowCreate(false);
+  };
+
   return (
     <div className="table-wrapper">
+      {showCreate && <CreateUserModal onClose={hideCreateUserModal} />}
+
       <table className="table">
         <thead>
           <tr>
@@ -111,9 +121,24 @@ const UserListTable = () => {
           </tr>
         </thead>
         <tbody>
-          <UserListItem />
+          {users.map((user) => (
+            <UserListItem
+              //  {...user} - short way using destructuring
+              key={user._id}
+              createdAt={user.createdAt}
+              email={user.email}
+              firstName={user.firstName}
+              imageUrl={user.imageUrl}
+              lastName={user.lastName}
+              phoneNumber={user.phoneNumber}
+            />
+          ))}
         </tbody>
       </table>
+
+      <button className="btn-add btn" onClick={createUserClickHandler}>
+        Add new user
+      </button>
     </div>
   );
 };
