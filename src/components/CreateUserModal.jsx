@@ -1,4 +1,4 @@
-const CreateUserModal = ({ onClose }) => {
+const CreateUserModal = ({ onClose, onCreate }) => {
   return (
     <div className="overlay">
       <div className="backdrop" onClick={onClose}></div>
@@ -24,7 +24,7 @@ const CreateUserModal = ({ onClose }) => {
               </svg>
             </button>
           </header>
-          <form>
+          <form onSubmit={onCreate}>
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="firstName">First name</label>
