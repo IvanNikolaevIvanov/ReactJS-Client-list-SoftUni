@@ -3,12 +3,14 @@ import { useEffect, useState } from "react";
 import * as userApi from "../services/userApi";
 import CreateUserModal from "./CreateUserModal";
 import UserInfoModal from "./UserInfoModal";
+import UserDeleteModal from "./UserDeleteModal";
 
 const UserListTable = () => {
   const [users, setUsers] = useState([]);
   const [showCreate, setShowCreate] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [showDelete, setShowDelete] = useState(false);
 
   useEffect(() => {
     userApi
@@ -47,6 +49,23 @@ const UserListTable = () => {
     setShowInfo(true);
   };
 
+  const deleteUserClickHandler = (userId) => {
+    setSelectedUser(userId);
+    setShowDelete(true);
+
+    console.log(userId);
+  };
+
+  const deleteUserHandler = async () => {
+    // Remove user from server
+    await userApi.remove(selectedUser);
+
+    //Remove user from state
+    setUsers((state) => state.filter((user) => user._id !== selectedUser));
+
+    //Close the Delete modal
+    setShowDelete(false);
+  };
   return (
     <div className="table-wrapper">
       {showCreate && (
@@ -60,6 +79,13 @@ const UserListTable = () => {
         <UserInfoModal
           onClose={() => setShowInfo(false)}
           userId={selectedUser}
+        />
+      )}
+
+      {showDelete && (
+        <UserDeleteModal
+          onClose={() => setShowDelete(false)}
+          onDelete={deleteUserHandler}
         />
       )}
 
@@ -173,6 +199,7 @@ const UserListTable = () => {
               lastName={user.lastName}
               phoneNumber={user.phoneNumber}
               onInfoClick={userInfoClickHandler}
+              onDeleteClick={deleteUserClickHandler}
             />
           ))}
         </tbody>
